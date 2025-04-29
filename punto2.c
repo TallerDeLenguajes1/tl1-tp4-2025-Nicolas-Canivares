@@ -25,15 +25,16 @@ Nodo * CrearNodo(Tarea nuevaTarea);
 //Funcion para insertar un nodo al comienzo de la lista
 void insertarNodo(Nodo **lista, Nodo *nuevoNodo);
 
-void listarTareasPendientes(Nodo **listaTareas);
+void listarTareas(Nodo **listaTareas);
 
 int main()
 {
     srand(time(NULL)); // Inicializa la semilla para la función rand()
     Nodo *listaTareasPendientes;
+    Nodo *listaTareasRealizadas;
     // Crear la lista vacía de tareas pendientes
     listaTareasPendientes = CrearListaVacia();
-
+    listaTareasRealizadas = CrearListaVacia();
     int opcion, seguir = 1, idTarea;
     Tarea nuevaTarea;
 
@@ -43,6 +44,7 @@ int main()
 
         printf("1. Crear tarea pendiente\n");
         printf("2. Cambiar estado a realizada\n");
+        printf("3. Listas todas las tareas");
         printf("0. Salir\n");
         printf("Ingrese la opcion deseada:\n");
         scanf("%d", &opcion);
@@ -58,9 +60,20 @@ int main()
             }
         }else if (opcion == 2)
         {
-            listarTareasPendientes(&listaTareasPendientes);
+            printf("Tareas pendientes:\n");
+            listarTareas(&listaTareasPendientes);
             printf("Ingrese el ID de la tarea a cambiar a realizada:\n");
             scanf("%d", &idTarea);
+            Nodo *tareaEncontrada = buscarTarea(listaTareasPendientes,idTarea);
+            insertarNodo(&listaTareasRealizadas, tareaEncontrada);
+            printf("Tareas Realizadas:\n");
+            listarTareas(&listaTareasRealizadas);
+        }else if (opcion == 3)
+        {
+            printf("TAREAS PENDIENTES: \n");
+            listarTareas(&listaTareasPendientes);
+            printf("TAREAS REALIZADAS: \n");
+            listarTareas(&listaTareasRealizadas);
         }
         
     } while (opcion != 0);
@@ -101,12 +114,23 @@ void insertarNodo(Nodo **lista, Nodo *nuevoNodo){
     *lista = nuevoNodo; // La lista ahora apunta al nuevo nodo
 }
 
-void listarTareasPendientes(Nodo **listaTareas){
-    printf("Tareas pendientes:\n");
+void listarTareas(Nodo **listaTareas){
+    
     Nodo *auxiliar = *listaTareas;
     while (auxiliar != NULL)
     {
         printf("ID: %d, Descripcion: %s, Duracion: %d\n", auxiliar->Tarea.TareaID, auxiliar->Tarea.Descripcion, auxiliar->Tarea.Duracion);
         auxiliar = auxiliar->Siguiente;
     }
+}
+
+
+
+Nodo * buscarTarea(Nodo * tareas, int idTarea){
+    Nodo *auxiliar = tareas;
+    while (auxiliar != NULL && auxiliar->Tarea.TareaID != idTarea)
+    {
+        auxiliar = auxiliar->Siguiente;
+    }
+    return auxiliar;
 }
