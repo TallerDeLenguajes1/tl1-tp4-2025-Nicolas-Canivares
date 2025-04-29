@@ -22,10 +22,16 @@ Nodo * CrearListaVacia();
 
 Nodo * CrearNodo(Tarea nuevaTarea);
 
+Nodo * QuitarNodo(Nodo **Start, int dato);
+
 //Funcion para insertar un nodo al comienzo de la lista
 void insertarNodo(Nodo **lista, Nodo *nuevoNodo);
 
 void listarTareas(Nodo **listaTareas);
+
+Nodo * buscarTarea(Nodo * tareas, int idTarea);
+
+Nodo * buscarTareaPalabra(Nodo * tareas);
 
 int main()
 {
@@ -35,7 +41,7 @@ int main()
     // Crear la lista vacía de tareas pendientes
     listaTareasPendientes = CrearListaVacia();
     listaTareasRealizadas = CrearListaVacia();
-    int opcion, seguir = 1, idTarea;
+    int opcion, seguir = 1, idTarea, consulta;
     Tarea nuevaTarea;
 
     //MENU
@@ -44,7 +50,8 @@ int main()
 
         printf("1. Crear tarea pendiente\n");
         printf("2. Cambiar estado a realizada\n");
-        printf("3. Listas todas las tareas");
+        printf("3. Listas todas las tareas\n");
+        printf("4. Consultar Tareas\n");
         printf("0. Salir\n");
         printf("Ingrese la opcion deseada:\n");
         scanf("%d", &opcion);
@@ -64,16 +71,59 @@ int main()
             listarTareas(&listaTareasPendientes);
             printf("Ingrese el ID de la tarea a cambiar a realizada:\n");
             scanf("%d", &idTarea);
-            Nodo *tareaEncontrada = buscarTarea(listaTareasPendientes,idTarea);
-            insertarNodo(&listaTareasRealizadas, tareaEncontrada);
+            //Nodo *tareaEncontrada = buscarTarea(listaTareasPendientes,idTarea);
+            Nodo *nodoTemporal = QuitarNodo(&listaTareasPendientes,idTarea);
+            if (nodoTemporal != NULL)
+            {
+                insertarNodo(&listaTareasRealizadas, nodoTemporal);
+            }
+
             printf("Tareas Realizadas:\n");
             listarTareas(&listaTareasRealizadas);
+
         }else if (opcion == 3)
         {
             printf("TAREAS PENDIENTES: \n");
             listarTareas(&listaTareasPendientes);
             printf("TAREAS REALIZADAS: \n");
             listarTareas(&listaTareasRealizadas);
+        }else if (opcion == 4){
+            
+            printf("Como desea buscar la tarea: \n");
+            printf("1. Busqueda por ID\n");
+            printf("2. Busqueda por palabra\n");
+            printf("0. SALIR\n");
+            printf("Ingrese una opcion: \n");
+            scanf("%d",&consulta);
+            Nodo * tareaEncontrada = NULL;
+            switch (consulta)
+            {
+            case 1:
+                printf("\nIngrese el ID a buscar: ");
+                scanf("%d", &idTarea);
+                tareaEncontrada = buscarTarea(listaTareasPendientes,idTarea);
+                if (tareaEncontrada != NULL)
+                {
+                    listarTareas(&tareaEncontrada);
+                }else{
+                    tareaEncontrada = buscarTarea(listaTareasRealizadas, idTarea);
+                    listarTareas(&tareaEncontrada);
+                }
+                
+                break;
+            case 2:
+                tareaEncontrada = buscarTareaPalabra(listaTareasPendientes);
+                if (tareaEncontrada == NULL)
+                {
+                    tareaEncontrada = buscarTareaPalabra(listaTareasRealizadas);
+                    listarTareas(&tareaEncontrada);
+                }
+                
+                break;
+            default:
+                printf("SALIENDO...");
+                break;
+            }
         }
         
     } while (opcion != 0);
@@ -124,13 +174,51 @@ void listarTareas(Nodo **listaTareas){
     }
 }
 
-
-
-Nodo * buscarTarea(Nodo * tareas, int idTarea){
+Nodo *buscarTarea(Nodo * tareas, int idTarea){
     Nodo *auxiliar = tareas;
     while (auxiliar != NULL && auxiliar->Tarea.TareaID != idTarea)
     {
         auxiliar = auxiliar->Siguiente;
     }
     return auxiliar;
+}
+
+Nodo * buscarTareaPalabra(Nodo * tareas){
+    char palabra[100];
+    printf("Ingrese la palabra a buscar: \n");
+    fflush(stdin);
+    gets(palabra);
+    Nodo *auxiliar = tareas;
+
+    while (auxiliar != NULL)
+    {
+        if (strstr(auxiliar->Tarea.Descripcion, palabra) != NULL)
+        {
+            // Encontró la palabra en la descripción de este nodo
+            return auxiliar;
+        }
+        
+        auxiliar = auxiliar->Siguiente;
+    }
+    return NULL;
+}
+
+
+Nodo *QuitarNodo(Nodo **Start, int TareaID){
+    Nodo **Aux = Start;
+
+    while (*Aux != NULL && (*Aux)->Tarea.TareaID != TareaID)
+    {
+        Aux = &(*Aux)->Siguiente;
+    }
+    
+    if (*Aux != NULL)
+    {
+        Nodo *Temp = *Aux;
+        *Aux = (*Aux)->Siguiente;
+        Temp->Siguiente = NULL;
+        return Temp;
+    }
+
+    return NULL;        
 }
