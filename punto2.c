@@ -33,6 +33,11 @@ Nodo * buscarTarea(Nodo * tareas, int idTarea);
 
 Nodo * buscarTareaPalabra(Nodo * tareas);
 
+Nodo *EliminarNodo(Nodo *Nodo);
+
+void InsertarNodoAlFinal(Nodo **Lista, Nodo *nuevoNodo);
+
+
 int main()
 {
     srand(time(NULL)); // Inicializa la semilla para la función rand()
@@ -221,4 +226,33 @@ Nodo *QuitarNodo(Nodo **Start, int TareaID){
     }
 
     return NULL;        
+}
+
+Nodo *EliminarNodo(Nodo *Nodo){
+    free(Nodo->Tarea.Descripcion);
+    free(Nodo);
+    return NULL;
+}
+
+void InsertarNodoAlFinal(Nodo **Lista, Nodo *nuevoNodo){
+    if (*Lista == NULL)
+    {
+        //Lista = NULL;
+        nuevoNodo->Siguiente = *Lista;
+        //NewNodo->Siguiente = NULL;
+        //*Lista = NewNodo
+        *Lista = nuevoNodo;
+
+    }else{
+        Nodo *Aux = *Lista;
+        while (Aux->Siguiente != NULL)
+        {
+            //Aux->Siguiente = NODO; != NULL
+            Aux = Aux->Siguiente;
+
+            //Aux = NODO
+        }
+        //Aux->Siguiente = NULL;
+        Aux->Siguiente = nuevoNodo;
+    }
 }
